@@ -1,0 +1,31 @@
+Namespace(arch='fconv_iwslt_de_en', bucket_cap_mb=150, clip_norm=0.1, criterion='cross_entropy', data=['data-bin/iwslt14.tokenized.de-en'], ddp_backend='c10d', decoder_attention='True', decoder_embed_dim=256, decoder_embed_path=None, decoder_layers='[(256, 3)] * 3', decoder_out_embed_dim=256, device_id=0, distributed_backend='nccl', distributed_init_method=None, distributed_port=-1, distributed_rank=0, distributed_world_size=1, dropout=0.2, encoder_embed_dim=256, encoder_embed_path=None, encoder_layers='[(256, 3)] * 4', fix_batches_to_gpus=False, fp16=False, fp16_init_scale=128, keep_interval_updates=-1, left_pad_source='True', left_pad_target='False', log_format=None, log_interval=1000, lr=[0.25], lr_scheduler='reduce_lr_on_plateau', lr_shrink=0.1, max_epoch=0, max_sentences=None, max_sentences_valid=None, max_source_positions=1024, max_target_positions=1024, max_tokens=4000, max_update=0, min_loss_scale=0.0001, min_lr=1e-05, momentum=0.99, no_epoch_checkpoints=False, no_progress_bar=False, no_save=False, optimizer='nag', optimizer_overrides='{}', raw_text=False, reset_lr_scheduler=False, reset_optimizer=False, restore_file='checkpoint_last.pt', save_dir='checkpoints/fconv', save_interval=1, save_interval_updates=0, seed=1, sentence_avg=False, share_input_output_embed=False, skip_invalid_size_inputs_valid_test=False, source_lang=None, target_lang=None, task='translation', train_subset='train', update_freq=[1], upsample_primary=1, valid_subset='valid', validate_interval=1, weight_decay=0.0)
+| [src] dictionary: 29 types
+| data-bin/iwslt14.tokenized.de-en train 1780 examples
+| data-bin/iwslt14.tokenized.de-en valid 98 examples
+| data-bin/iwslt14.tokenized.de-en test 89 examples
+| model fconv_iwslt_de_en, criterion CrossEntropyCriterion
+| num. model params: 3690754
+| training on 1 GPUs
+| max tokens per GPU = 4000 and max sentences per GPU = None
+| epoch 001 | loss 18.269 | ppl 315769.81 | wps 4940 | ups 27.9 | wpb 148 | bsz 148 | num_updates 12 | lr 0.25 | gnorm 66.862 | clip 100% | oom 0 | wall 0 | train_wall 0
+| epoch 001 | valid on 'valid' subset | valid_loss 9.40711 | valid_ppl 678.92 | num_updates 12
+| epoch 001 | valid on 'test' subset | valid_loss 9.28755 | valid_ppl 624.93 | num_updates 12
+| epoch 002 | loss 6.202 | ppl 73.61 | wps 4919 | ups 23.1 | wpb 148 | bsz 148 | num_updates 24 | lr 0.25 | gnorm 23.151 | clip 100% | oom 0 | wall 1 | train_wall 1
+| epoch 002 | valid on 'valid' subset | valid_loss 10.9243 | valid_ppl 1943.27 | num_updates 24 | best 9.40711
+| epoch 002 | valid on 'test' subset | valid_loss 11.3351 | valid_ppl 2583.48 | num_updates 24 | best 9.40711
+| epoch 003 | loss 4.917 | ppl 30.21 | wps 5021 | ups 28.0 | wpb 148 | bsz 148 | num_updates 36 | lr 0.025 | gnorm 21.157 | clip 100% | oom 0 | wall 1 | train_wall 1
+| epoch 003 | valid on 'valid' subset | valid_loss 4.81763 | valid_ppl 28.20 | num_updates 36 | best 4.81763
+| epoch 003 | valid on 'test' subset | valid_loss 7.3492 | valid_ppl 163.05 | num_updates 36 | best 7.3492
+| epoch 004 | loss 4.658 | ppl 25.25 | wps 4474 | ups 23.5 | wpb 148 | bsz 148 | num_updates 48 | lr 0.025 | gnorm 21.328 | clip 100% | oom 0 | wall 2 | train_wall 1
+| epoch 004 | valid on 'valid' subset | valid_loss 6.48314 | valid_ppl 89.46 | num_updates 48 | best 4.81763
+| epoch 004 | valid on 'test' subset | valid_loss 7.90828 | valid_ppl 240.23 | num_updates 48 | best 4.81763
+| epoch 005 | loss 4.594 | ppl 24.16 | wps 4379 | ups 24.5 | wpb 148 | bsz 148 | num_updates 60 | lr 0.0025 | gnorm 18.344 | clip 100% | oom 0 | wall 2 | train_wall 2
+| epoch 005 | valid on 'valid' subset | valid_loss 6.7793 | valid_ppl 109.84 | num_updates 60 | best 4.81763
+| epoch 005 | valid on 'test' subset | valid_loss 8.00869 | valid_ppl 257.55 | num_updates 60 | best 4.81763
+| epoch 006 | loss 4.372 | ppl 20.70 | wps 4326 | ups 24.4 | wpb 148 | bsz 148 | num_updates 72 | lr 0.00025 | gnorm 17.298 | clip 100% | oom 0 | wall 3 | train_wall 2
+| epoch 006 | valid on 'valid' subset | valid_loss 6.78646 | valid_ppl 110.39 | num_updates 72 | best 4.81763
+| epoch 006 | valid on 'test' subset | valid_loss 8.00696 | valid_ppl 257.24 | num_updates 72 | best 4.81763
+| epoch 007 | loss 4.436 | ppl 21.64 | wps 4100 | ups 23.5 | wpb 148 | bsz 148 | num_updates 84 | lr 2.5e-05 | gnorm 18.034 | clip 100% | oom 0 | wall 3 | train_wall 2
+| epoch 007 | valid on 'valid' subset | valid_loss 6.79127 | valid_ppl 110.76 | num_updates 84 | best 4.81763
+| epoch 007 | valid on 'test' subset | valid_loss 8.00873 | valid_ppl 257.55 | num_updates 84 | best 4.81763
+| done training in 3.4 seconds
