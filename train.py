@@ -110,7 +110,6 @@ def main(args):
     train_meter.stop()
     print('| done training in {:.1f} seconds'.format(train_meter.sum))
 
-
 def train(args, trainer, task, epoch_itr):
     """Train the model for one epoch."""
 
