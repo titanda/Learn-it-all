@@ -8,7 +8,6 @@
 import torch.optim.lr_scheduler
 
 from . import FairseqLRScheduler, register_lr_scheduler
-import pdb
 
 @register_lr_scheduler('reduce_lr_on_plateau')
 class ReduceLROnPlateau(FairseqLRScheduler):
@@ -50,7 +49,6 @@ class ReduceLROnPlateau(FairseqLRScheduler):
 
     def step(self, epoch, val_loss=None):
         """Update the learning rate at the end of the given epoch."""
-        #pdb.set_trace()
         if val_loss is not None:
             self.lr_scheduler.step(val_loss, epoch)
         else:

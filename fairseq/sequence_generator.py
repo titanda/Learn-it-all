@@ -11,7 +11,8 @@ import torch
 
 from fairseq import search, utils
 from fairseq.models import FairseqIncrementalDecoder
-import pdb
+
+import os
 
 class SequenceGenerator(object):
     def __init__(
@@ -44,7 +45,6 @@ class SequenceGenerator(object):
         self.len_penalty = len_penalty
         self.unk_penalty = unk_penalty
         self.retain_dropout = retain_dropout
-        #pdb.set_trace()
 
         assert sampling_topk < 0 or sampling, '--sampling-topk requires --sampling'
 
@@ -130,7 +130,6 @@ class SequenceGenerator(object):
 
         encoder_outs = []
         incremental_states = {}
-        #pdb.set_trace()
         for model in self.models:
             if not self.retain_dropout:
                 model.eval()
@@ -140,7 +139,6 @@ class SequenceGenerator(object):
                 incremental_states[model] = None
 
             # compute the encoder output for each beam
-            #pdb.set_trace()
             self.raw = encoder_input['raw']
             encoder_input = {'src_tokens': encoder_input['src_tokens'], 'src_lengths': encoder_input['src_lengths']} 
             encoder_out = model.encoder(**encoder_input)
@@ -170,7 +168,7 @@ class SequenceGenerator(object):
         # offset arrays for converting between different indexing schemes
         bbsz_offsets = (torch.arange(0, bsz) * beam_size).unsqueeze(1).type_as(tokens)
         cand_offsets = torch.arange(0, cand_size).type_as(tokens)
-        #pdb.set_trace()
+
         # helper function for allocating buffers on the fly
         buffers = {}
 
@@ -215,7 +213,6 @@ class SequenceGenerator(object):
                     unfinalized hypotheses
             """
             assert bbsz_idx.numel() == eos_scores.numel()
-            #pdb.set_trace()
             # clone relevant token and attention tensors
             tokens_clone = tokens.index_select(0, bbsz_idx)
             tokens_clone = tokens_clone[:, 1:step + 2]  # skip the first index, which is EOS
@@ -291,7 +288,6 @@ class SequenceGenerator(object):
         reorder_state = None
         batch_idxs = None
         for step in range(maxlen+1):  # one extra step for EOS marker
-            #pdb.set_trace()
             # reorder decoder internal states based on the prev choice of beams
             if reorder_state is not None:
                 if batch_idxs is not None:
@@ -305,7 +301,7 @@ class SequenceGenerator(object):
                     encoder_outs[i] = model.encoder.reorder_encoder_out(encoder_outs[i], reorder_state)
 
             lprobs, avg_attn_scores, all_attn_scores = self._decode(tokens[:, :step + 1], encoder_outs, incremental_states)
-            #pdb.set_trace()
+
             print("predict:{}".format(lprobs.cpu().tolist()[0][0]))
             print("avg_attn_scores:")
             printScore = [aas for aas in avg_attn_scores.cpu().tolist()[0]]
@@ -319,23 +315,23 @@ class SequenceGenerator(object):
             #print("all_attn_scores:")
             print("output all_attn_scores")
             layer = 0
-            outFileName="/home/arucuid/matplot/allRes"
+            dirname = os.path.dirname(__file__)
+            outFileName= os.path.join(dirname, '../allRes')
             outputFile = open(outFileName,'w')
             for single_attn_scores in all_attn_scores:
                 single_attn_scores = torch.nn.functional.softmax(single_attn_scores,dim=-1)
                 print_single_attn_scores = [aas for aas in single_attn_scores[0][0].cpu().tolist()]
-                #print("layer {}:".format(layer))
+                print("layer {}:".format(layer))
                 outputFile.write("layer {}:\n".format(layer))
                 for i,ps in enumerate(print_single_attn_scores):
-                    #print("{}: {}".format(splitToken[i],ps),end=' ')
-                    #pdb.set_trace()
+                    print("{}: {}".format(splitToken[i],ps),end=' ')
                     outputFile.write("{}: {}".format(splitToken[i],ps))
                     if i < len(print_single_attn_scores)-1:
                       outputFile.write(" ")
-                #print()
+                print()
                 outputFile.write("\n")
                 layer += 1
-            #pdb.set_trace()
+            outputFile.close()
             #lprobs[:, self.pad] = -math.inf  # never select pad
             #lprobs[:, self.unk] -= self.unk_penalty  # apply unk penalty
 
@@ -351,7 +347,7 @@ class SequenceGenerator(object):
             scores_buf = scores_buf.type_as(lprobs)
             eos_bbsz_idx = buffer('eos_bbsz_idx')
             eos_scores = buffer('eos_scores', type_of=scores)
-            #pdb.set_trace()
+
             if step < maxlen:
                 if prefix_tokens is not None and step < prefix_tokens.size(1):
                     probs_slice = lprobs.view(bsz, -1, lprobs.size(-1))[:, 0, :]
@@ -369,7 +365,6 @@ class SequenceGenerator(object):
                     )
             else:
                 # make probs contain cumulative scores for each hypothesis
-                #pdb.set_trace()
                 lprobs.add_(scores[:, step - 1].unsqueeze(-1))
 
                 # finalize all active hypotheses once we hit maxlen
@@ -515,7 +510,6 @@ class SequenceGenerator(object):
         # sort by score descending
         for sent in range(len(finalized)):
             finalized[sent] = sorted(finalized[sent], key=lambda r: r['score'], reverse=True)
-        #pdb.set_trace()
         return finalized
 
     def _decode(self, tokens, encoder_outs, incremental_states):
@@ -524,7 +518,7 @@ class SequenceGenerator(object):
 
         log_probs = []
         avg_attn = None
-        #pdb.set_trace()
+
         for model, encoder_out in zip(self.models, encoder_outs):
             probs, attn = self._decode_one(tokens, model, encoder_out, incremental_states, log_probs=True)
             log_probs.append(probs)
@@ -539,7 +533,6 @@ class SequenceGenerator(object):
         return avg_probs, avg_attn
 
     def _decode_one(self, tokens, model, encoder_out, incremental_states, log_probs):
-        #pdb.set_trace()
         with torch.no_grad():
             if incremental_states[model] is not None:
                 tokens = tokens.float()
@@ -548,7 +541,6 @@ class SequenceGenerator(object):
                 decoder_out = list(model.decoder(tokens, encoder_out))
             decoder_out[0] = decoder_out[0][:, -1, :]
             attn = decoder_out[1]
-            #pdb.set_trace()
             if type(attn) is dict:
                 attn = attn['attn']
             if attn is not None:
@@ -556,6 +548,5 @@ class SequenceGenerator(object):
                     attn = attn['attn']
                 attn = attn[:, -1, :]
         probs = model.get_normalized_probs(decoder_out, log_probs=log_probs)
-        #pdb.set_trace()
         probs = decoder_out[0]
         return probs, attn, decoder_out[2]

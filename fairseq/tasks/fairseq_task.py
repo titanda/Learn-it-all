@@ -7,7 +7,6 @@
 
 from fairseq.data import data_utils, FairseqDataset, iterators
 import torch
-import pdb
 
 class FairseqTask(object):
     """
@@ -52,7 +51,6 @@ class FairseqTask(object):
             a :class:`~fairseq.data.FairseqDataset` corresponding to *split*
         """
         from fairseq.data import FairseqDataset
-        #pdb.set_trace()
         if split not in self.datasets:
             raise KeyError('Dataset not loaded: ' + split)
         if not isinstance(self.datasets[split], FairseqDataset):
@@ -91,7 +89,6 @@ class FairseqTask(object):
                 given dataset split
         """
         assert isinstance(dataset, FairseqDataset)
-        #pdb.set_trace()
         # get indices ordered by example size
         with data_utils.numpy_seed(seed):
             indices = dataset.ordered_indices()

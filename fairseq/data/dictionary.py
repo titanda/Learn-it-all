@@ -9,7 +9,6 @@ from collections import Counter
 import os
 
 import torch
-import pdb
 
 class Dictionary(object):
     """A mapping from symbols to consecutive integers"""
@@ -162,7 +161,6 @@ class Dictionary(object):
         ...
         ```
         """
-        #pdb.set_trace()
         if isinstance(f, str):
             try:
                 if not ignore_utf_errors:

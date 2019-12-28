@@ -17,7 +17,6 @@ import torch
 
 from fairseq import data, options, tasks, tokenizer, utils
 from fairseq.sequence_generator import SequenceGenerator
-import pdb
 
 Batch = namedtuple('Batch', 'srcs tokens lengths')
 Translation = namedtuple('Translation', 'src_str hypos pos_scores alignments')
@@ -67,19 +66,15 @@ def main(args):
         '--max-sentences/--batch-size cannot be larger than --buffer-size'
 
     print(args)
-    #pdb.set_trace()
     use_cuda = torch.cuda.is_available() and not args.cpu
 
     # Setup task, e.g., translation
     task = tasks.setup_task(args)
 
-    #pdb.set_trace()
     # Load ensemble
     print('| loading model(s) from {}'.format(args.path))
     model_paths = args.path.split(':')
-    #pdb.set_trace()
     models, model_args = utils.load_ensemble_for_inference(model_paths, task, model_arg_overrides=eval(args.model_overrides))
-    #pdb.set_trace()
     # Set dictionaries
     tgt_dict = task.target_dictionary
 
@@ -167,9 +162,7 @@ def main(args):
     for inputs in buffered_read(args.buffer_size):
         indices = []
         results = []
-        #pdb.set_trace()
         for batch, batch_indices in make_batches(inputs, args, task, max_positions):
-            #pdb.set_trace()
             indices.extend(batch_indices)
             results += process_batch(batch)
 

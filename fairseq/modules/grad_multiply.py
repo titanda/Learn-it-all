@@ -6,7 +6,6 @@
 # can be found in the PATENTS file in the same directory.
 
 import torch
-import pdb
 
 class GradMultiply(torch.autograd.Function):
     @staticmethod
@@ -17,5 +16,4 @@ class GradMultiply(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad):
-        #pdb.set_trace()
         return grad * ctx.scale, None

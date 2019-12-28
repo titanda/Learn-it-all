@@ -8,7 +8,6 @@
 from torch.optim.optimizer import Optimizer, required
 
 from . import FairseqOptimizer, register_optimizer
-import pdb
 
 @register_optimizer('nag')
 class FairseqNAG(FairseqOptimizer):
@@ -67,12 +66,10 @@ class NAG(Optimizer):
 
                 if weight_decay != 0:
                     p.data.mul_(1 - lr * weight_decay)
-                #pdb.set_trace()
                 p.data.add_(momentum * momentum * lr_correct, buf)
                 p.data.add_(-(1 + momentum) * lr, d_p)
 
                 buf.mul_(momentum * lr_correct).add_(-lr, d_p)
 
             group['lr_old'] = lr
-        #pdb.set_trace()
         return loss

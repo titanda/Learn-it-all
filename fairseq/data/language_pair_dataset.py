@@ -11,7 +11,6 @@ import torch
 from fairseq import utils
 
 from . import data_utils, FairseqDataset
-import pdb
 
 def collate(
     samples, pad_idx, eos_idx, left_pad_source=True, left_pad_target=False,
@@ -36,7 +35,6 @@ def collate(
 
     prev_output_tokens = None
     target = None
-    #pdb.set_trace()
     if samples[0].get('target', None) is not None:
         target = merge('target', left_pad=left_pad_target)
         target = target.index_select(0, sort_order)
@@ -52,12 +50,10 @@ def collate(
             )
             prev_output_tokens = prev_output_tokens.index_select(0, sort_order)
         '''
-        #pdb.set_trace()
         prev_output_tokens = torch.Tensor().new_ones(target.size()[0],1)
     else:
         ntokens = sum(len(s['source']) for s in samples)
     #prev_output_tokens=torch.DoubleTensor
-    #pdb.set_trace()
     batch = {
         'id': id,
         'ntokens': ntokens,

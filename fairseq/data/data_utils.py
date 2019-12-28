@@ -9,7 +9,6 @@ import contextlib
 import os
 
 import numpy as np
-import pdb
 
 def infer_language_pair(path):
     """Infer language pair from filename: <split>.<lang1>-<lang2>.(...).idx"""
@@ -23,7 +22,6 @@ def infer_language_pair(path):
 
 def collate_tokens(values, pad_idx, eos_idx, left_pad, move_eos_to_beginning=False):
     """Convert a list of 1d tensors into a padded 2d tensor."""
-    #pdb.set_trace()
     size = max(v.size(0) for v in values)
     res = values[0].new(len(values), size).fill_(pad_idx)
 
@@ -167,6 +165,5 @@ def batch_by_size(
 
         batch.append(idx)
 
-    #pdb.set_trace()
     if len(batch) > 0:
         yield batch

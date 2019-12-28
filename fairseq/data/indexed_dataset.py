@@ -12,7 +12,6 @@ import numpy as np
 import torch
 
 from fairseq.tokenizer import Tokenizer
-import pdb
 
 def read_longs(f, n):
     a = np.empty(n, dtype=np.int64)
@@ -54,7 +53,6 @@ class IndexedDataset(torch.utils.data.Dataset):
 
     def __init__(self, path, fix_lua_indexing=False, read_data=True):
         super().__init__()
-        #pdb.set_trace()
         self.fix_lua_indexing = fix_lua_indexing
         self.read_index(path)
         self.data_file = None
@@ -149,7 +147,6 @@ class IndexedCachedDataset(IndexedDataset):
         super().__init__(path, fix_lua_indexing, True)
         self.cache = None
         self.cache_index = {}
-        #pdb.set_trace()
 
     @property
     def supports_prefetch(self):
@@ -159,10 +156,8 @@ class IndexedCachedDataset(IndexedDataset):
         if all(i in self.cache_index for i in indices):
             return
         indices.sort()
-        #pdb.set_trace()
         total_size = 0
         for i in indices:
-            #pdb.set_trace()
             total_size += self.data_offsets[i + 1] - self.data_offsets[i]
         self.cache = np.empty(total_size, dtype=self.dtype)
         ptx = 0
@@ -174,10 +169,8 @@ class IndexedCachedDataset(IndexedDataset):
             self.data_file.seek(self.data_offsets[i] * self.element_size)
             self.data_file.readinto(a)
             ptx += size
-        #pdb.set_trace()
 
     def __getitem__(self, i):
-        #print("{} {} {}".format(self.dtype,i,self.cache_index[i]))
         self.check_index(i)
         tensor_size = self.sizes[self.dim_offsets[i]:self.dim_offsets[i + 1]]
         a = np.empty(tensor_size, dtype=self.dtype)
@@ -190,7 +183,6 @@ class IndexedCachedDataset(IndexedDataset):
             item = torch.from_numpy(a).long()
         if self.fix_lua_indexing:
             item -= 1  # subtract 1 for 0-based indexing
-        #print("{} {} {}".format(item,a,self.cache[:10]))
         return item
 
 class IndexedInMemoryDataset(IndexedDataset):

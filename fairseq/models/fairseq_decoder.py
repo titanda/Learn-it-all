@@ -7,7 +7,6 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-import pdb
 
 class FairseqDecoder(nn.Module):
     """Base class for decoders."""
@@ -35,7 +34,6 @@ class FairseqDecoder(nn.Module):
 
     def get_normalized_probs(self, net_output, log_probs, sample):
         """Get normalized probabilities (or log probs) from a net's output."""
-        #pdb.set_trace()
         if hasattr(self, 'adaptive_softmax') and self.adaptive_softmax is not None:
             assert sample is not None and 'target' in sample
             out = self.adaptive_softmax.get_log_prob(net_output[0], sample['target'])

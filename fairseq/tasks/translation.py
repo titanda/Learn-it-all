@@ -8,7 +8,6 @@
 import itertools
 import numpy as np
 import os
-import pdb
 
 from fairseq import options
 from fairseq.data import (
@@ -93,8 +92,6 @@ class TranslationTask(FairseqTask):
         #assert src_dict.unk() == tgt_dict.unk()
         print('| [src] dictionary: {} types'.format(len(src_dict)))
         #print('| [{}] dictionary: {} types'.format(args.target_lang, len(tgt_dict)))
-        #pdb.set_trace()
-        #return cls(args, src_dict, tgt_dict)
         return cls(args, src_dict, tgt_dict)
 
     def load_dataset(self, split, combine=False, **kwargs):
@@ -149,13 +146,10 @@ class TranslationTask(FairseqTask):
             src_datasets.append(indexed_dataset(prefix_src, self.src_dict))
             tgt_datasets.append(indexed_dataset(prefix_tgt, None))
 
-            #pdb.set_trace()
             print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
-            #pdb.set_trace()
 
             if not combine:
                 break
-        #pdb.set_trace()
         assert len(src_datasets) == len(tgt_datasets)
 
         if len(src_datasets) == 1:

@@ -6,7 +6,6 @@
 # can be found in the PATENTS file in the same directory.
 
 from . import FairseqLRScheduler, register_lr_scheduler
-import pdb
 
 @register_lr_scheduler('fixed')
 class FixedSchedule(FairseqLRScheduler):
@@ -45,7 +44,6 @@ class FixedSchedule(FairseqLRScheduler):
     def step(self, epoch, val_loss=None):
         """Update the learning rate at the end of the given epoch."""
         super().step(epoch, val_loss)
-        #pdb.set_trace()
         self.lr = self.get_next_lr(epoch)
         self.optimizer.set_lr(self.warmup_factor * self.lr)
         return self.optimizer.get_lr()

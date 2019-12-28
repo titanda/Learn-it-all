@@ -14,7 +14,6 @@ from fairseq.models import ARCH_MODEL_REGISTRY, ARCH_CONFIG_REGISTRY
 from fairseq.optim import OPTIMIZER_REGISTRY
 from fairseq.optim.lr_scheduler import LR_SCHEDULER_REGISTRY
 from fairseq.tasks import TASK_REGISTRY
-import pdb
 
 def get_training_parser(default_task='translation'):
     parser = get_parser('Trainer', default_task)
@@ -72,7 +71,6 @@ def parse_args_and_arch(parser, input_args=None, parse_known=False):
     # parse a second time after adding the *-specific arguments.
     # If input_args is given, we will parse those args instead of sys.argv.
     args, _ = parser.parse_known_args(input_args)
-    #pdb.set_trace()
     # Add model-specific args to parser.
     if hasattr(args, 'arch'):
         model_specific_group = parser.add_argument_group(

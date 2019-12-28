@@ -8,7 +8,6 @@
 import math
 
 import torch
-import pdb
 
 class FairseqOptimizer(object):
 
@@ -75,7 +74,6 @@ class FairseqOptimizer(object):
     def multiply_grads(self, c):
         """Multiplies grads by a constant ``c``."""
         for p in self.params:
-            #pdb.set_trace()
             p.grad.data.mul_(c)
 
     def clip_grad_norm(self, max_norm):

@@ -9,7 +9,6 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pdb
 
 from fairseq import options, utils
 from fairseq.modules import (
@@ -269,7 +268,6 @@ class FConvEncoder(FairseqEncoder):
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)
 
-        #pdb.set_trace()
         residuals = [x]
         # temporal convolutions
         for proj, conv, res_layer in zip(self.projections, self.convolutions, self.residuals):
@@ -312,7 +310,6 @@ class FConvEncoder(FairseqEncoder):
 
         # add output to input embedding for attention
         y = (x + input_embedding) * math.sqrt(0.5)
-        #pdb.set_trace()
         return {
             'encoder_out': (x, y),
             'encoder_padding_mask': encoder_padding_mask,  # B x T
@@ -341,14 +338,12 @@ class AttentionLayer(nn.Module):
         self.in_projection = Linear(conv_channels, embed_dim)
         # projects from embedding dimension to convolution size
         self.out_projection = Linear(embed_dim, conv_channels)
-        #pdb.set_trace()
         self.bmm = bmm if bmm is not None else torch.bmm
 
     def forward(self, x, target_embedding, encoder_out, encoder_padding_mask):
         residual = x
 
         ret_mid=[]
-        #pdb.set_trace()
         # attention
         x = (self.in_projection(x) + target_embedding) * math.sqrt(0.5)
         x = self.bmm(x, encoder_out[0])
@@ -366,25 +361,10 @@ class AttentionLayer(nn.Module):
         x = x.view(sz)
         attn_scores = x
         
-        '''
-        myS = encoder_out[1].size(1)
-        myS = myS * math.sqrt(1.0 / myS)
-        #pdb.set_trace()
-        for i in range(x.size()[2]):
-            #myRes = encoder_out[1][0,i,:]*x[0][0][i]
-            myRes = encoder_out[1][0,i,:]
-            myRes = myRes * myS
-            myRes = myRes.unsqueeze(0)
-            myRes = myRes.unsqueeze(0)
-            myRes = self.out_projection(myRes)
-            ret_mid.append(myRes)
-        #pdb.set_trace()
-        '''
         x = self.bmm(x, encoder_out[1])
         
         # scale attention output (respecting potentially different lengths)
         s = encoder_out[1].size(1)
-        #pdb.set_trace()
         if encoder_padding_mask is None:
             x = x * (s * math.sqrt(1.0 / s))
         else:
@@ -392,18 +372,8 @@ class AttentionLayer(nn.Module):
             s = s.unsqueeze(-1)
             x = x * (s * s.rsqrt())
 
-        #pdb.set_trace()
         # project back
         x = (self.out_projection(x) + residual) * math.sqrt(0.5)
-
-        '''
-        myProj = self.out_projection(x)
-        ret_mid[len(ret_mid)-1] = myProj
-        ret_mid[len(ret_mid)-2] = residual
-        ret_mid[len(ret_mid)-3] = myProj + residual
-        x = (myProj + residual) * math.sqrt(0.5)
-        ret_mid[len(ret_mid)-4] = x
-        '''
 
         return x, attn_scores, ret_mid
 
@@ -443,18 +413,6 @@ class FConvDecoder(FairseqIncrementalDecoder):
         else:
             num_embeddings = len(dictionary)
         padding_idx = dictionary.pad()
-        '''
-        self.embed_tokens = Embedding(num_embeddings, embed_dim, padding_idx)
-        if embed_dict:
-            self.embed_tokens = utils.load_embedding(embed_dict, self.dictionary, self.embed_tokens)
-
-        self.embed_positions = PositionalEmbedding(
-            max_positions,
-            embed_dim,
-            padding_idx,
-            left_pad=self.left_pad,
-        ) if positional_embeddings else None
-        '''
         self.fc0 = Linear(1, embed_dim, dropout=dropout)
 
         self.fc1 = Linear(embed_dim, in_channels, dropout=dropout)
@@ -489,36 +447,14 @@ class FConvDecoder(FairseqIncrementalDecoder):
                                                     dropout=adaptive_softmax_dropout)
         else:
             self.fc2 = Linear(in_channels, out_embed_dim)
-            '''
-            if share_embed:
-                assert out_embed_dim == embed_dim, \
-                    "Shared embed weights implies same dimensions " \
-                    " out_embed_dim={} vs embed_dim={}".format(out_embed_dim, embed_dim)
-                self.fc3 = nn.Linear(out_embed_dim, num_embeddings)
-                self.fc3.weight = self.embed_tokens.weight
-            else:
-                self.fc3 = Linear(out_embed_dim, num_embeddings, dropout=dropout)
-            '''
             self.fc3 = Linear(out_embed_dim, 1, dropout=dropout)
 
     def forward(self, prev_output_tokens, encoder_out_dict=None, incremental_state=None):
         if encoder_out_dict is not None:
             encoder_out = encoder_out_dict['encoder_out']
             encoder_padding_mask = encoder_out_dict['encoder_padding_mask']
-            #pdb.set_trace()
             # split and transpose encoder outputs
             encoder_a, encoder_b = self._split_encoder_out(encoder_out, incremental_state)
-        '''
-        if self.embed_positions is not None:
-            pos_embed = self.embed_positions(prev_output_tokens, incremental_state)
-        else:
-            pos_embed = 0
-
-        if incremental_state is not None:
-            prev_output_tokens = prev_output_tokens[:, -1:]
-        x = self._embed_tokens(prev_output_tokens, incremental_state)
-        '''
-        #pdb.set_trace()
         x = self.fc0(prev_output_tokens)
         x = x.unsqueeze(1)
         # embed tokens and combine with positional embeddings
@@ -540,7 +476,6 @@ class FConvDecoder(FairseqIncrementalDecoder):
         important = []
         conv_res = []
         ret_mid = None
-        #pdb.set_trace()
         for proj, conv, attention, res_layer in zip(self.projections, self.convolutions, self.attention,
                                                     self.residuals):
             if res_layer > 0:
@@ -559,15 +494,6 @@ class FConvDecoder(FairseqIncrementalDecoder):
                 x = self._transpose_if_training(x, incremental_state)
 
                 x, attn_scores, ret_mid = attention(x, target_embedding, (encoder_a, encoder_b), encoder_padding_mask)
-                '''
-                imp_ele=[]
-                for i in range(attn_scores.size()[2]):
-                    tempRes = self.fc2(ret_mid[i]);
-                    tempRes = self.fc3(tempRes);
-                    imp_ele.append(tempRes)                
-                important.append(imp_ele)
-                '''
-                #pdb.set_trace()
                 if not self.training and self.need_attn:
                     all_attn_scores.append(attn_scores)
                     attn_scores = attn_scores / num_attn_layers
@@ -585,24 +511,15 @@ class FConvDecoder(FairseqIncrementalDecoder):
             if residual is not None:
                 x = (x + residual) * math.sqrt(0.5)
             residuals.append(x)
-        '''
-        for i in range(len(conv_res)):
-            tempRes = self.fc2(conv_res[i]);
-            tempRes = self.fc3(tempRes);
-            important.append(tempRes)
-        '''
-        #pdb.set_trace()
         # T x B x C -> B x T x C
         x = self._transpose_if_training(x, incremental_state)
 
         # project back to size of vocabulary if not using adaptive softmax
         if self.fc2 is not None and self.fc3 is not None:
             x = self.fc2(x)
-            #pdb.set_trace()
             x = F.dropout(x, p=self.dropout, training=self.training)
             x = self.fc3(x)
 
-        #pdb.set_trace()
         return x, avg_attn_scores, all_attn_scores 
 
     def reorder_incremental_state(self, incremental_state, new_order):

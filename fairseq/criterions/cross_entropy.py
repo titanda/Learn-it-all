@@ -12,7 +12,6 @@ from fairseq import utils
 
 from . import FairseqCriterion, register_criterion
 
-import pdb
 
 @register_criterion('cross_entropy')
 class CrossEntropyCriterion(FairseqCriterion):
@@ -28,7 +27,6 @@ class CrossEntropyCriterion(FairseqCriterion):
         2) the sample size, which is used as the denominator for the gradient
         3) logging outputs to display while training
         """
-        #pdb.set_trace()
         net_output = model(**sample['net_input'])
         #origin
         '''
@@ -48,12 +46,10 @@ class CrossEntropyCriterion(FairseqCriterion):
         loss = loss_fn(predict, target)
         '''
 
-        #pdb.set_trace()
         #RMSE
         loss_fn = torch.nn.MSELoss(reduce=reduce, size_average=True)
         loss = loss_fn(predict, target)
         loss = torch.sqrt(loss)
-        #loss = loss*math.sqrt(target.size()[0])
         loss_fn_show = torch.nn.MSELoss(reduce=reduce, size_average=False)
         loss_show = loss_fn_show(predict, target)
 
@@ -71,7 +67,6 @@ class CrossEntropyCriterion(FairseqCriterion):
     @staticmethod
     def aggregate_logging_outputs(logging_outputs):
         """Aggregate logging outputs from data parallel training."""
-        #pdb.set_trace()
         loss_sum = sum(log.get('loss', 0) for log in logging_outputs)
         ntokens = sum(log.get('ntokens', 0) for log in logging_outputs)
         nsentences = sum(log.get('nsentences', 0) for log in logging_outputs)

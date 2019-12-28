@@ -20,7 +20,6 @@ from fairseq.data import iterators
 from fairseq.trainer import Trainer
 from fairseq.meters import AverageMeter, StopwatchMeter
 
-import pdb
 from scipy.stats.stats import pearsonr
 
 def main(args):
@@ -55,7 +54,7 @@ def main(args):
         model.max_positions(),
     )
     dummy_batch = task.dataset('train').get_dummy_batch(args.max_tokens, max_positions)
-    #pdb.set_trace()
+
     # Build trainer
     trainer = Trainer(args, task, model, criterion, dummy_batch)
     print('| training on {} GPUs'.format(args.distributed_world_size))
@@ -63,7 +62,7 @@ def main(args):
         args.max_tokens,
         args.max_sentences,
     ))
-    #pdb.set_trace()
+
     # Initialize dataloader
     epoch_itr = task.get_batch_iterator(
         dataset=task.dataset(args.train_subset),
@@ -99,14 +98,14 @@ def main(args):
             test_losses = validate(args, trainer, task, epoch_itr, ['test'])
             testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
 
-        #pdb.set_trace()
         # only use first validation loss to update the learning rate
         lr = trainer.lr_step(epoch_itr.epoch, valid_losses[0])
 
         # save checkpoint
         if epoch_itr.epoch % args.save_interval == 0:
             save_checkpoint(args, trainer, epoch_itr, valid_losses[0])
-    #testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
+
+    testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
     train_meter.stop()
     print('| done training in {:.1f} seconds'.format(train_meter.sum))
 
@@ -130,16 +129,13 @@ def train(args, trainer, task, epoch_itr):
     first_valid = args.valid_subset.split(',')[0]
     max_update = args.max_update or math.inf
     for i, samples in enumerate(progress, start=epoch_itr.iterations_in_epoch):
-        #pdb.set_trace()
         log_output = trainer.train_step(samples)
         if log_output is None:
             continue
 
-        #pdb.set_trace()
         # log mid-epoch stats
         stats = get_training_stats(trainer)
         for k, v in log_output.items():
-            #pdb.set_trace()
             if k in ['loss', 'nll_loss', 'ntokens', 'nsentences', 'sample_size']:
                 continue  # these are already logged above
             if 'loss' in k:
@@ -236,9 +232,7 @@ def validate(args, trainer, task, epoch_itr, subsets):
         extra_meters = collections.defaultdict(lambda: AverageMeter())
 
         for sample in progress:
-            #pdb.set_trace()
             log_output = trainer.valid_step(sample)
-            #pdb.set_trace()
             #if subsets[0] is 'test':
                 #pdb.set_trace()
             if predict is None:
@@ -261,14 +255,10 @@ def validate(args, trainer, task, epoch_itr, subsets):
         valid_losses.append(stats['valid_loss'])
 
     
-    #pdb.set_trace()
-    #print("R: {}".format(pearsonr(predict,target)))
     print("R: {}".format(pearsonr(predict.cpu(),target.cpu())))
     
     loss_fn = torch.nn.MSELoss()
     print("MSE: {}".format(loss_fn(predict,target)))
-
-    #pdb.set_trace()
 
     myloss = torch.nn.L1Loss()
     print("AAE: {}".format(myloss(predict,target)))

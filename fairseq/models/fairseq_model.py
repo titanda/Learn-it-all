@@ -10,7 +10,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from . import FairseqDecoder, FairseqEncoder
-import pdb
 
 class BaseFairseqModel(nn.Module):
     """Base class for fairseq models."""
@@ -35,7 +34,6 @@ class BaseFairseqModel(nn.Module):
 
     def get_normalized_probs(self, net_output, log_probs, sample=None):
         """Get normalized probabilities (or log probs) from a net's output."""
-        #pdb.set_trace()
         if hasattr(self, 'decoder'):
             return self.decoder.get_normalized_probs(net_output, log_probs, sample)
         elif torch.is_tensor(net_output):
@@ -160,11 +158,8 @@ class FairseqModel(BaseFairseqModel):
         Returns:
             the decoder's output, typically of shape `(batch, tgt_len, vocab)`
         """
-        #pdb.set_trace()
         encoder_out = self.encoder(src_tokens, src_lengths)
-        #pdb.set_trace()
         decoder_out = self.decoder(prev_output_tokens, encoder_out)
-        #pdb.set_trace()
         return decoder_out
 
     def max_positions(self):

@@ -12,7 +12,6 @@ import numpy as np
 import torch
 
 from . import data_utils
-import pdb
 
 class CountingIterator(object):
     """Wrapper around an iterable that maintains the iteration count.
@@ -151,7 +150,6 @@ class EpochBatchIterator(object):
             with data_utils.numpy_seed(seed):
                 np.random.shuffle(batches)
             return batches
-        #pdb.set_trace()
         if self._supports_prefetch:
             batches = self.frozen_batches
 
@@ -172,7 +170,6 @@ class EpochBatchIterator(object):
                 batches = self.frozen_batches
             batches = ShardedIterator(batches, self.num_shards, self.shard_id, fill_value=[])
 
-        #pdb.set_trace()
         return CountingIterator(torch.utils.data.DataLoader(
             self.dataset,
             collate_fn=self.collate_fn,
@@ -228,7 +225,6 @@ class ShardedIterator(object):
         self._sharded_len = len(iterable) // num_shards
         if len(iterable) % num_shards > 0:
             self._sharded_len += 1
-        #pdb.set_trace()
         self.itr = itertools.zip_longest(
             range(self._sharded_len),
             itertools.islice(iterable, shard_id, len(iterable), num_shards),
