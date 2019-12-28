@@ -40,7 +40,6 @@ def main(args):
     # Load dataset splits
     load_dataset_splits(task, ['train', 'valid', 'test', 'testenu'])
     #load_dataset_splits(task, ['train', 'valid', 'test'])
-    #pdb.set_trace()
 
     # Build model and criterion
     model = task.build_model(args)
