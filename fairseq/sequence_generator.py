@@ -316,15 +316,24 @@ class SequenceGenerator(object):
                 print("{}: {}".format(splitToken[i],ps),end=' ')
             print()
 
-            print("all_attn_scores:")
+            #print("all_attn_scores:")
+            print("output all_attn_scores")
             layer = 0
+            outFileName="/home/arucuid/matplot/allRes"
+            outputFile = open(outFileName,'w')
             for single_attn_scores in all_attn_scores:
                 single_attn_scores = torch.nn.functional.softmax(single_attn_scores,dim=-1)
                 print_single_attn_scores = [aas for aas in single_attn_scores[0][0].cpu().tolist()]
-                print("layer {}:".format(layer))
+                #print("layer {}:".format(layer))
+                outputFile.write("layer {}:\n".format(layer))
                 for i,ps in enumerate(print_single_attn_scores):
-                    print("{}: {}".format(splitToken[i],ps),end=' ')
-                print()
+                    #print("{}: {}".format(splitToken[i],ps),end=' ')
+                    #pdb.set_trace()
+                    outputFile.write("{}: {}".format(splitToken[i],ps))
+                    if i < len(print_single_attn_scores)-1:
+                      outputFile.write(" ")
+                #print()
+                outputFile.write("\n")
                 layer += 1
             #pdb.set_trace()
             #lprobs[:, self.pad] = -math.inf  # never select pad

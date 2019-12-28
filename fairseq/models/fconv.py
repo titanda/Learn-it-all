@@ -365,7 +365,8 @@ class AttentionLayer(nn.Module):
         x = F.softmax(x.view(sz[0] * sz[1], sz[2]), dim=1)
         x = x.view(sz)
         attn_scores = x
-
+        
+        '''
         myS = encoder_out[1].size(1)
         myS = myS * math.sqrt(1.0 / myS)
         #pdb.set_trace()
@@ -378,8 +379,9 @@ class AttentionLayer(nn.Module):
             myRes = self.out_projection(myRes)
             ret_mid.append(myRes)
         #pdb.set_trace()
+        '''
         x = self.bmm(x, encoder_out[1])
-
+        
         # scale attention output (respecting potentially different lengths)
         s = encoder_out[1].size(1)
         #pdb.set_trace()
@@ -392,15 +394,16 @@ class AttentionLayer(nn.Module):
 
         #pdb.set_trace()
         # project back
-        #x = (self.out_projection(x) + residual) * math.sqrt(0.5)
-        
+        x = (self.out_projection(x) + residual) * math.sqrt(0.5)
+
+        '''
         myProj = self.out_projection(x)
         ret_mid[len(ret_mid)-1] = myProj
         ret_mid[len(ret_mid)-2] = residual
         ret_mid[len(ret_mid)-3] = myProj + residual
         x = (myProj + residual) * math.sqrt(0.5)
         ret_mid[len(ret_mid)-4] = x
-        
+        '''
 
         return x, attn_scores, ret_mid
 
@@ -556,8 +559,8 @@ class FConvDecoder(FairseqIncrementalDecoder):
                 x = self._transpose_if_training(x, incremental_state)
 
                 x, attn_scores, ret_mid = attention(x, target_embedding, (encoder_a, encoder_b), encoder_padding_mask)
-                imp_ele=[]
                 '''
+                imp_ele=[]
                 for i in range(attn_scores.size()[2]):
                     tempRes = self.fc2(ret_mid[i]);
                     tempRes = self.fc3(tempRes);
@@ -771,13 +774,21 @@ def base_architecture(args):
 
 @register_model_architecture('fconv', 'fconv_iwslt_de_en')
 def fconv_iwslt_de_en(args):
+    '''
+    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 256)
+    args.encoder_layers = getattr(args, 'encoder_layers', '[(256, 3)] * 4')
+    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 256)
+    args.decoder_layers = getattr(args, 'decoder_layers', '[(256, 3)] * 3')
+    args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 256)
+    base_architecture(args)
+    '''
     args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 64)
     args.encoder_layers = getattr(args, 'encoder_layers', '[(256, 3)] * 5')
     args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 64)
     args.decoder_layers = getattr(args, 'decoder_layers', '[(256, 3)] * 5')
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 64)
     base_architecture(args)
-
+    #'''
 
 @register_model_architecture('fconv', 'fconv_wmt_en_ro')
 def fconv_wmt_en_ro(args):

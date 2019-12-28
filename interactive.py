@@ -73,9 +73,11 @@ def main(args):
     # Setup task, e.g., translation
     task = tasks.setup_task(args)
 
+    #pdb.set_trace()
     # Load ensemble
     print('| loading model(s) from {}'.format(args.path))
     model_paths = args.path.split(':')
+    #pdb.set_trace()
     models, model_args = utils.load_ensemble_for_inference(model_paths, task, model_arg_overrides=eval(args.model_overrides))
     #pdb.set_trace()
     # Set dictionaries

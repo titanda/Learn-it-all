@@ -38,8 +38,8 @@ def main(args):
     task = tasks.setup_task(args)
 
     # Load dataset splits
-    #load_dataset_splits(task, ['train', 'valid', 'test', 'testenu'])
-    load_dataset_splits(task, ['train', 'valid', 'test'])
+    load_dataset_splits(task, ['train', 'valid', 'test', 'testenu'])
+    #load_dataset_splits(task, ['train', 'valid', 'test'])
     #pdb.set_trace()
 
     # Build model and criterion
@@ -95,9 +95,10 @@ def main(args):
         train(args, trainer, task, epoch_itr)
 
         if epoch_itr.epoch % args.validate_interval == 0:
+            train_losses = validate(args, trainer, task, epoch_itr, ['train'])
             valid_losses = validate(args, trainer, task, epoch_itr, valid_subsets)
             test_losses = validate(args, trainer, task, epoch_itr, ['test'])
-            #testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
+            testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
 
         #pdb.set_trace()
         # only use first validation loss to update the learning rate

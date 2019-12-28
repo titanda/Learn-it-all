@@ -21,15 +21,15 @@ class ReduceLROnPlateau(FairseqLRScheduler):
                 'Cannot use a fixed learning rate schedule with reduce_lr_on_plateau.'
                 ' Consider --lr-scheduler=fixed instead.'
             )
-        ''' 
+        #''' 
         self.lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer.optimizer, patience=0, factor=args.lr_shrink)
-        '''
         #'''
+        '''
         self.lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer.optimizer, patience=10, factor=0.5)
-        #'''       
         ''' 
+        '''
         self.lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer.optimizer, patience=0, factor=0.1)
         '''

@@ -1,2 +1,2 @@
 data split:
-	train : valid : test = 1000 : 60 : 56
+	train : valid : test = 955 : 50 : 112
