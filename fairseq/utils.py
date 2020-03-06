@@ -74,7 +74,7 @@ def load_model_state(filename, model):
     except Exception:
         raise Exception('Cannot load model parameters from checkpoint, '
                         'please ensure that the architectures match')
-
+    #pdb.set_trace()
     return state['extra_state'], state['optimizer_history'], state['last_optimizer_state']
 
 

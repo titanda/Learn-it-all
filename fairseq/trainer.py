@@ -116,6 +116,7 @@ class Trainer(object):
 
     def load_checkpoint(self, filename, reset_optimizer=False, reset_lr_scheduler=False, optimizer_overrides=None):
         """Load all training state from a checkpoint file."""
+        #pdb.set_trace()
         extra_state, self._optim_history, last_optim_state = \
             utils.load_model_state(filename, self.get_model())
         if last_optim_state is not None and not reset_optimizer:

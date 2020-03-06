@@ -90,6 +90,7 @@ def main(args):
     train_meter.start()
     valid_losses = [None]
     valid_subsets = args.valid_subset.split(',')
+    #pdb.set_trace()
     while lr > args.min_lr and epoch_itr.epoch < max_epoch and trainer.get_num_updates() < max_update:
         # train for one epoch
         train(args, trainer, task, epoch_itr)
@@ -269,6 +270,8 @@ def validate(args, trainer, task, epoch_itr, subsets):
     loss_fn = torch.nn.MSELoss()
     print("MSE: {}".format(loss_fn(predict,target)))
 
+    print("MAPE: {}".format(MAPELoss(predict,target)))
+
     #pdb.set_trace()
 
     myloss = torch.nn.L1Loss()
@@ -281,6 +284,8 @@ def validate(args, trainer, task, epoch_itr, subsets):
     '''
     return valid_losses
 
+def MAPELoss(output, target):
+    return torch.mean(torch.abs((target - output) / target))    
 
 def get_valid_stats(trainer):
     stats = collections.OrderedDict()

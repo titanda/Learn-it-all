@@ -1,0 +1,54 @@
+Namespace(arch='fconv_iwslt_de_en', bucket_cap_mb=150, clip_norm=25, criterion='cross_entropy', data=['/data/jenhaochen/delaney_dc/eFull_17_1_2_noSame'], ddp_backend='c10d', decoder_attention='True', decoder_embed_dim=64, decoder_embed_path=None, decoder_layers='[(256, 3)] * 5', decoder_out_embed_dim=64, device_id=1, distributed_backend='nccl', distributed_init_method=None, distributed_port=-1, distributed_rank=0, distributed_world_size=1, dropout=0.1, encoder_embed_dim=64, encoder_embed_path=None, encoder_layers='[(256, 3)] * 5', fix_batches_to_gpus=False, fp16=False, fp16_init_scale=128, keep_interval_updates=-1, left_pad_source='True', left_pad_target='False', log_format=None, log_interval=1000, lr=[0.25], lr_scheduler='reduce_lr_on_plateau', lr_shrink=0.1, max_epoch=10000, max_sentences=None, max_sentences_valid=None, max_source_positions=1024, max_target_positions=1024, max_tokens=6000, max_update=0, min_loss_scale=0.0001, min_lr=1e-05, momentum=0.99, my_args='/data/jenhaochen/delaney_dc/eMax2/checkpoint11.pt', no_epoch_checkpoints=False, no_progress_bar=False, no_save=False, optimizer='nag', optimizer_overrides='{}', raw_text=False, reset_lr_scheduler=False, reset_optimizer=False, restore_file='checkpoint_last.pt', save_dir='checkpoints', save_interval=1, save_interval_updates=0, seed=1, sentence_avg=False, share_input_output_embed=False, skip_invalid_size_inputs_valid_test=False, source_lang=None, target_lang=None, task='translation', train_subset='test', update_freq=[1], upsample_primary=1, valid_subset='valid', validate_interval=1, weight_decay=0.0)
+| [src] dictionary: 37 types
+| /data/jenhaochen/delaney_dc/eFull_17_1_2_noSame valid 1500000 examples
+| /data/jenhaochen/delaney_dc/eFull_17_1_2_noSame test 112 examples
+| loading model(s) from /data/jenhaochen/delaney_dc/eMax2/checkpoint11.pt
+| model fconv_iwslt_de_en, criterion CrossEntropyCriterion
+| num. model params: 4244418
+| training on 1 GPUs
+| max tokens per GPU = 6000 and max sentences per GPU = None
+| epoch 000 | valid on 'valid' subset | valid_loss 0.672817 | valid_ppl 1.59 | num_updates 0
+R: (0.9584474, 0.0)
+predict: tensor([ 0.9939,  0.9939,  1.3785,  ..., -4.8623, -4.8326, -4.9249], device='cuda:1')
+target: tensor([ 1.3400,  1.3400,  1.3400,  ..., -5.3500, -5.3500, -5.3500], device='cuda:1')
+MSE: 0.4526822566986084
+MAPE: 0.2208126038312912
+AAE: 0.4710710942745209
+SD: 0.6719195829739975
+| epoch 000 | valid on 'test' subset | valid_loss 0.540512 | valid_ppl 1.45 | num_updates 0
+R: (0.9494148, 3.7017528663601195e-57)
+predict: tensor([-3.6608, -3.7991, -5.4819, -4.3790, -5.3009, -2.4610, -2.9310, -3.3144,
+        -3.8621, -4.2283, -4.1519, -3.1579, -3.7302, -2.8775, -3.3541, -1.5312,
+        -2.9496, -6.7591, -3.4808, -6.8756, -4.2619, -4.1430, -4.3533, -2.3268,
+        -4.3969, -5.8730, -3.7960, -3.6246, -2.3539, -1.9947, -2.8176, -2.7801,
+        -2.3716, -0.4648, -3.5411, -6.9178, -2.7982,  0.3402, -1.7814, -3.0431,
+        -2.3298, -4.6086, -3.1826, -3.2953, -1.6494, -2.4062, -5.5275, -2.5187,
+        -2.2540,  0.3386, -2.5430, -3.6820, -5.4715, -2.1747, -0.2205, -2.1672,
+        -0.8795, -3.8159, -1.7233, -2.8957, -1.3784, -0.6299, -1.8551, -1.4341,
+        -1.6386, -1.3119, -4.3429, -1.5352, -2.7443, -3.3679, -1.9907, -4.0895,
+        -1.4951, -2.1619, -2.0708, -0.6134, -1.7408, -5.0164, -0.0409, -0.5460,
+        -0.0866, -2.3517, -0.9302, -3.1126, -2.5000, -1.1793, -5.2994, -0.3935,
+        -2.9006, -0.2580, -1.1587, -0.6684, -3.2185, -0.9483, -1.7895, -3.2727,
+        -3.4986, -1.6895, -3.0263, -2.7288, -1.0899, -2.1519, -1.1785, -1.9152,
+        -4.5743, -4.7536, -4.3930, -3.2913, -4.8292, -3.5979, -5.6268, -5.6697],
+       device='cuda:1')
+target: tensor([-3.7900, -2.9000, -5.6800, -4.3800, -4.5700, -2.9300, -3.2900, -2.7000,
+        -4.9200, -4.1200, -3.7500, -3.3800, -4.8700, -2.5200, -2.1700, -1.2300,
+        -3.2200, -7.2000, -2.7300, -7.0200, -4.3100, -2.8100, -4.4000, -2.3900,
+        -5.8200, -6.2000, -4.4100, -4.5700, -2.1800, -2.3600, -2.5600, -1.4600,
+        -3.2400, -0.6000, -3.8000, -6.2500, -2.6900,  0.7400, -1.0600, -3.4800,
+        -1.5600, -3.9600, -3.9600, -3.5300, -1.9400, -2.0600, -4.6300, -2.7700,
+        -2.3700,  0.3900, -2.3400, -3.6600, -4.5000, -2.5400, -0.8500, -2.4200,
+        -1.9500, -3.7600, -0.8300, -3.1800, -1.2100, -0.6200, -0.7800, -1.1600,
+        -1.1600, -1.5000, -4.4700, -0.8500, -2.7700, -3.0800, -2.0000, -4.2300,
+        -1.4500, -2.1100, -2.0900, -0.7000, -1.3600, -5.0500,  0.5100, -0.4000,
+         0.6200, -2.5100, -0.8900, -3.0300, -1.8500, -1.3400, -4.8100,  0.1100,
+        -3.1000, -0.2200, -1.3300, -0.8500, -3.1800, -0.8500, -1.5900, -3.0800,
+        -2.9600, -1.6800, -2.5700, -2.2900, -0.6000, -1.6000, -0.7900, -1.0000,
+        -3.9300, -4.3100, -4.9000, -3.0900, -4.6300, -4.7600, -6.1200, -4.8000],
+       device='cuda:1')
+MSE: 0.2921527326107025
+MAPE: 0.2578633725643158
+AAE: 0.4145415723323822
+SD: 0.5345070943512281
+| done training
