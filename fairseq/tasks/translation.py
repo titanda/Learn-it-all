@@ -85,13 +85,17 @@ class TranslationTask(FairseqTask):
             raise Exception('Could not infer language pair, please provide it explicitly')
         '''
         # load dictionaries
-        src_dict = Dictionary.load(os.path.join(args.data[0], 'dict.txt'))
+        src = "src"
+        tgt = "tgt"
+        src_dict = Dictionary.load(os.path.join(args.data[0], 'dict.{}.txt'.format(src)))
+        tgt_dict = Dictionary.load(os.path.join(args.data[0], 'dict.{}.txt'.format(tgt)))
         #src_dict = Dictionary.load(os.path.join(args.data[0], 'dict.{}.txt'.format(args.source_lang)))
-        tgt_dict = Dictionary()
+        #tgt_dict = Dictionary()
         #assert src_dict.pad() == tgt_dict.pad()
         #assert src_dict.eos() == tgt_dict.eos()
         #assert src_dict.unk() == tgt_dict.unk()
         print('| [src] dictionary: {} types'.format(len(src_dict)))
+        print('| [src] dictionary: {} types'.format(len(tgt_dict)))
         #print('| [{}] dictionary: {} types'.format(args.target_lang, len(tgt_dict)))
         #pdb.set_trace()
         #return cls(args, src_dict, tgt_dict)
@@ -147,7 +151,8 @@ class TranslationTask(FairseqTask):
             prefix_tgt = os.path.join(data_path, '{}.{}'.format(split_k, tgt))
             
             src_datasets.append(indexed_dataset(prefix_src, self.src_dict))
-            tgt_datasets.append(indexed_dataset(prefix_tgt, None))
+            #tgt_datasets.append(indexed_dataset(prefix_tgt, None))
+            tgt_datasets.append(indexed_dataset(prefix_tgt, self.tgt_dict))
 
             #pdb.set_trace()
             print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
