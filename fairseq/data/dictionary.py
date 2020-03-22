@@ -199,8 +199,9 @@ class Dictionary(object):
     def dummy_sentence(self, length):
         if length==1:
           #t = torch.Tensor(length).uniform_(self.nspecial + 1, len(self))
+          #pdb.set_trace()
           t = torch.Tensor(length).uniform_(self.nspecial + 1, len(self)).long()
-          t[-1] = self.eos()
+          #t[-1] = self.eos()
         else:
           t = torch.Tensor(length).uniform_(self.nspecial + 1, len(self)).long()
           t[-1] = self.eos()

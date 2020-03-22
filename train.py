@@ -22,6 +22,7 @@ from fairseq.meters import AverageMeter, StopwatchMeter
 
 import pdb
 from scipy.stats.stats import pearsonr
+from sklearn.metrics import accuracy_score
 
 def main(args):
     if args.max_tokens is None:
@@ -56,7 +57,7 @@ def main(args):
         model.max_positions(),
     )
     dummy_batch = task.dataset('train').get_dummy_batch(args.max_tokens, max_positions)
-    pdb.set_trace()
+    #pdb.set_trace()
     # Build trainer
     trainer = Trainer(args, task, model, criterion, dummy_batch)
     print('| training on {} GPUs'.format(args.distributed_world_size))
@@ -208,6 +209,7 @@ def validate(args, trainer, task, epoch_itr, subsets):
     valid_losses = []
     predict = None
     target = None
+    #pdb.set_trace()
     for subset in subsets:
         # Initialize data iterator
         itr = task.get_batch_iterator(
@@ -265,17 +267,19 @@ def validate(args, trainer, task, epoch_itr, subsets):
     
     #pdb.set_trace()
     #print("R: {}".format(pearsonr(predict,target)))
+    '''
     print("R: {}".format(pearsonr(predict.cpu(),target.cpu())))
     
     loss_fn = torch.nn.MSELoss()
     print("MSE: {}".format(loss_fn(predict,target)))
 
     print("MAPE: {}".format(MAPELoss(predict,target)))
-
+    '''
     #pdb.set_trace()
-
+    '''
     myloss = torch.nn.L1Loss()
     print("AAE: {}".format(myloss(predict,target)))
+    '''
     '''
     if subsets[0] is 'test' or 'testenu':
         #pdb.set_trace()

@@ -258,6 +258,7 @@ class FConvEncoder(FairseqEncoder):
         x = F.dropout(x, p=self.dropout, training=self.training)
         input_embedding = x
 
+        #pdb.set_trace()
         # project to size of convolution
         x = self.fc1(x)
 
@@ -443,7 +444,7 @@ class FConvDecoder(FairseqIncrementalDecoder):
         else:
             num_embeddings = len(dictionary)
         padding_idx = dictionary.pad()
-        '''
+        
         self.embed_tokens = Embedding(num_embeddings, embed_dim, padding_idx)
         if embed_dict:
             self.embed_tokens = utils.load_embedding(embed_dict, self.dictionary, self.embed_tokens)
@@ -454,8 +455,8 @@ class FConvDecoder(FairseqIncrementalDecoder):
             padding_idx,
             left_pad=self.left_pad,
         ) if positional_embeddings else None
-        '''
-        self.fc0 = Linear(1, embed_dim, dropout=dropout)
+        
+        #self.fc0 = Linear(1, embed_dim, dropout=dropout)
 
         self.fc1 = Linear(embed_dim, in_channels, dropout=dropout)
         self.projections = nn.ModuleList()
@@ -499,7 +500,9 @@ class FConvDecoder(FairseqIncrementalDecoder):
             else:
                 self.fc3 = Linear(out_embed_dim, num_embeddings, dropout=dropout)
             '''
-            self.fc3 = Linear(out_embed_dim, 1, dropout=dropout)
+            #self.fc3 = Linear(out_embed_dim, 1, dropout=dropout)
+            #pdb.set_trace()
+            self.fc3 = Linear(out_embed_dim, num_embeddings, dropout=dropout)
 
     def forward(self, prev_output_tokens, encoder_out_dict=None, incremental_state=None):
         if encoder_out_dict is not None:
@@ -508,7 +511,7 @@ class FConvDecoder(FairseqIncrementalDecoder):
             #pdb.set_trace()
             # split and transpose encoder outputs
             encoder_a, encoder_b = self._split_encoder_out(encoder_out, incremental_state)
-        '''
+        
         if self.embed_positions is not None:
             pos_embed = self.embed_positions(prev_output_tokens, incremental_state)
         else:
@@ -517,12 +520,14 @@ class FConvDecoder(FairseqIncrementalDecoder):
         if incremental_state is not None:
             prev_output_tokens = prev_output_tokens[:, -1:]
         x = self._embed_tokens(prev_output_tokens, incremental_state)
-        '''
+        
         #pdb.set_trace()
+        '''
         x = self.fc0(prev_output_tokens)
         x = x.unsqueeze(1)
+        '''
         # embed tokens and combine with positional embeddings
-        #x += pos_embed
+        x += pos_embed
         x = F.dropout(x, p=self.dropout, training=self.training)
         target_embedding = x
 

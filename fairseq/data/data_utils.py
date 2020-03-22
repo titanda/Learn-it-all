@@ -86,6 +86,7 @@ def filter_by_size(indices, size_fn, max_positions, raise_exception=False):
             if any elements are filtered. Default: ``False``
     """
     def check_size(idx):
+        #pdb.set_trace()
         if isinstance(max_positions, float) or isinstance(max_positions, int):
             return size_fn(idx) <= max_positions
         elif isinstance(max_positions, dict):
@@ -98,6 +99,7 @@ def filter_by_size(indices, size_fn, max_positions, raise_exception=False):
         else:
             return all(a is None or b is None or a <= b
                        for a, b in zip(size_fn(idx), max_positions))
+    #pdb.set_trace()
     ignored = []
     itr = collect_filtered(check_size, indices, ignored)
     for idx in itr:

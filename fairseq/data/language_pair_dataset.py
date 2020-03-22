@@ -53,7 +53,9 @@ def collate(
             prev_output_tokens = prev_output_tokens.index_select(0, sort_order)
         '''
         #pdb.set_trace()
-        prev_output_tokens = torch.Tensor().new_ones(target.size()[0],1)
+        #prev_output_tokens = torch.Tensor().new_ones(target.size()[0],1)
+        myTemp = np.full((target.size()[0],1),pad_idx)
+        prev_output_tokens = torch.from_numpy(myTemp)
     else:
         ntokens = sum(len(s['source']) for s in samples)
     #prev_output_tokens=torch.DoubleTensor

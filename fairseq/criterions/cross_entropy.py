@@ -31,16 +31,17 @@ class CrossEntropyCriterion(FairseqCriterion):
         #pdb.set_trace()
         net_output = model(**sample['net_input'])
         #origin
-        '''
         lprobs = model.get_normalized_probs(net_output, log_probs=True)
         lprobs = lprobs.view(-1, lprobs.size(-1))
         target = model.get_targets(sample, net_output).view(-1)
         loss = F.nll_loss(lprobs, target, size_average=False, ignore_index=self.padding_idx,
                           reduce=reduce)
-        '''
 
+        #pdb.set_trace()
+        
         target = model.get_targets(sample, net_output).view(-1)
-        predict = net_output[0].view(target.size())
+        predict = torch.max(net_output[0],2)[1].squeeze(1)
+        
 
         #MSE
         '''
@@ -50,22 +51,24 @@ class CrossEntropyCriterion(FairseqCriterion):
 
         #pdb.set_trace()
         #RMSE
+        '''
         loss_fn = torch.nn.MSELoss(reduce=reduce, size_average=True)
         loss = loss_fn(predict, target)
         loss = torch.sqrt(loss)
         #loss = loss*math.sqrt(target.size()[0])
         loss_fn_show = torch.nn.MSELoss(reduce=reduce, size_average=False)
         loss_show = loss_fn_show(predict, target)
-
+        '''
         sample_size = sample['target'].size(0) if self.args.sentence_avg else sample['ntokens']
         logging_output = {
-            'loss': utils.item(loss_show.data) if reduce else loss_show.data,
+            'loss': utils.item(loss.data) if reduce else loss.data,
             'ntokens': sample['ntokens'],
             'nsentences': sample['target'].size(0),
             'sample_size': sample_size,
             'target': target,
             'predict': predict
         }
+        #pdb.set_trace()
         return loss, sample_size, logging_output
 
     @staticmethod
@@ -79,7 +82,7 @@ class CrossEntropyCriterion(FairseqCriterion):
         target = [log.get('target') for log in logging_outputs]
         predict = [log.get('predict') for log in logging_outputs]
         agg_output = {
-            'loss': loss_sum / sample_size,
+            'loss': loss_sum / sample_size / math.log(2),
             'ntokens': ntokens,
             'nsentences': nsentences,
             'sample_size': sample_size,
@@ -87,5 +90,6 @@ class CrossEntropyCriterion(FairseqCriterion):
             'predict': predict
         }
         if sample_size != ntokens:
-            agg_output['nll_loss'] = loss_sum / ntokens
+            agg_output['nll_loss'] = loss_sum / ntokens / math.log(2)
+        #pdb.set_trace()
         return agg_output

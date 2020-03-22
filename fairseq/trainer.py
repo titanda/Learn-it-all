@@ -160,7 +160,8 @@ class Trainer(object):
 
         if not dummy_batch:
             self.meters['train_wall'].start()
-
+        
+        #pdb.set_trace()
         # forward and backward pass
         logging_outputs, sample_sizes, ooms = [], [], 0
         for i, sample in enumerate(samples):
