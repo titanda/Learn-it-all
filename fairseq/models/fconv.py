@@ -619,8 +619,9 @@ class FConvDecoder(FairseqIncrementalDecoder):
 
     def max_positions(self):
         """Maximum output length supported by the decoder."""
-        #return self.embed_positions.max_positions() if self.embed_positions is not None else float('inf')
-        return 1
+        #pdb.set_trace()
+        return self.embed_positions.max_positions() if self.embed_positions is not None else float('inf')
+        #return 1
 
     def upgrade_state_dict(self, state_dict):
         if utils.item(state_dict.get('decoder.version', torch.Tensor([1]))[0]) < 2:
@@ -787,11 +788,11 @@ def fconv_iwslt_de_en(args):
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 256)
     base_architecture(args)
     '''
-    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 64)
-    args.encoder_layers = getattr(args, 'encoder_layers', '[(256, 3)] * 5')
-    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 64)
-    args.decoder_layers = getattr(args, 'decoder_layers', '[(256, 3)] * 5')
-    args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 64)
+    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 32)
+    args.encoder_layers = getattr(args, 'encoder_layers', '[(64, 3)] * 4')
+    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 32)
+    args.decoder_layers = getattr(args, 'decoder_layers', '[(64, 3)] * 4')
+    args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 32)
     base_architecture(args)
     #'''
 

@@ -34,6 +34,7 @@ class CrossEntropyCriterion(FairseqCriterion):
         lprobs = model.get_normalized_probs(net_output, log_probs=True)
         lprobs = lprobs.view(-1, lprobs.size(-1))
         target = model.get_targets(sample, net_output).view(-1)
+        #pdb.set_trace()
         loss = F.nll_loss(lprobs, target, size_average=False, ignore_index=self.padding_idx,
                           reduce=reduce)
 
@@ -41,6 +42,9 @@ class CrossEntropyCriterion(FairseqCriterion):
         
         target = model.get_targets(sample, net_output).view(-1)
         predict = torch.max(net_output[0],2)[1].squeeze(1)
+        true_prob = net_output[0][:,:,5:].reshape(net_output[0].shape[0])
+        #true_prob = torch.max(net_output[0],2)[0].squeeze(1)
+        #true_prob = net_output[0][:,:,5:].reshape(net_output[0].shape[0])
         
 
         #MSE
@@ -66,7 +70,8 @@ class CrossEntropyCriterion(FairseqCriterion):
             'nsentences': sample['target'].size(0),
             'sample_size': sample_size,
             'target': target,
-            'predict': predict
+            'predict': predict,
+            'true_prob': true_prob
         }
         #pdb.set_trace()
         return loss, sample_size, logging_output
@@ -81,13 +86,15 @@ class CrossEntropyCriterion(FairseqCriterion):
         sample_size = sum(log.get('sample_size', 0) for log in logging_outputs)
         target = [log.get('target') for log in logging_outputs]
         predict = [log.get('predict') for log in logging_outputs]
+        true_prob= [log.get('true_prob') for log in logging_outputs]
         agg_output = {
             'loss': loss_sum / sample_size / math.log(2),
             'ntokens': ntokens,
             'nsentences': nsentences,
             'sample_size': sample_size,
             'target': target,
-            'predict': predict
+            'predict': predict,
+            'true_prob': true_prob
         }
         if sample_size != ntokens:
             agg_output['nll_loss'] = loss_sum / ntokens / math.log(2)

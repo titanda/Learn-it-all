@@ -414,7 +414,7 @@ def resolve_max_positions(*args):
             elif item is not None and item < minim:
                 minim = item
         return minim
-
+    #pdb.set_trace()
     max_positions = None
     for arg in args:
         if max_positions is None:

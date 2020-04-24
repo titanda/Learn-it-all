@@ -177,6 +177,7 @@ class IndexedCachedDataset(IndexedDataset):
         #pdb.set_trace()
 
     def __getitem__(self, i):
+        #pdb.set_trace()
         #print("{} {} {}".format(self.dtype,i,self.cache_index[i]))
         self.check_index(i)
         tensor_size = self.sizes[self.dim_offsets[i]:self.dim_offsets[i + 1]]

@@ -71,6 +71,7 @@ def parse_args_and_arch(parser, input_args=None, parse_known=False):
     # we parse twice. First we parse the model/criterion/optimizer, then we
     # parse a second time after adding the *-specific arguments.
     # If input_args is given, we will parse those args instead of sys.argv.
+    #pdb.set_trace()
     args, _ = parser.parse_known_args(input_args)
     #pdb.set_trace()
     # Add model-specific args to parser.

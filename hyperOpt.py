@@ -25,6 +25,7 @@ from scipy.stats.stats import pearsonr
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_auc_score
+import sys
 
 def main(args):
     if args.max_tokens is None:
@@ -100,10 +101,10 @@ def main(args):
         train(args, trainer, task, epoch_itr)
 
         if epoch_itr.epoch % args.validate_interval == 0:
-            train_losses = validate(args, trainer, task, epoch_itr, ['train'])
+            #train_losses = validate(args, trainer, task, epoch_itr, ['train'])
             valid_losses = validate(args, trainer, task, epoch_itr, valid_subsets)
-            test_losses = validate(args, trainer, task, epoch_itr, ['test'])
-            testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
+            #test_losses = validate(args, trainer, task, epoch_itr, ['test'])
+            #testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
 
         #pdb.set_trace()
         # only use first validation loss to update the learning rate
@@ -115,6 +116,10 @@ def main(args):
     #testenu_losses = validate(args, trainer, task, epoch_itr, ['testenu'])
     train_meter.stop()
     print('| done training in {:.1f} seconds'.format(train_meter.sum))
+    print('| best is {}'.format(save_checkpoint.best))
+    myBest = save_checkpoint.best
+    save_checkpoint.best = sys.maxsize
+    return myBest
 
 def train(args, trainer, task, epoch_itr):
     """Train the model for one epoch."""
@@ -261,6 +266,7 @@ def validate(args, trainer, task, epoch_itr, subsets):
                     continue
                 #extra_meters[k].update(v)
 
+        #pdb.set_trace()
         # log validation stats
         stats = get_valid_stats(trainer)
         for k, meter in extra_meters.items():
@@ -314,6 +320,7 @@ def get_valid_stats(trainer):
         nll_loss = trainer.get_meter('valid_loss').avg
     stats['valid_ppl'] = get_perplexity(nll_loss)
     stats['num_updates'] = trainer.get_num_updates()
+    #pdb.set_trace()
     if hasattr(save_checkpoint, 'best'):
         stats['best'] = min(save_checkpoint.best, stats['valid_loss'])
     return stats
@@ -406,18 +413,43 @@ def load_dataset_splits(task, splits):
                     break
                 raise e
 
+def initMyArgs(args):
+  #vars(args)['data']=['/data/jenhaochen/hiv/testDataset']
+  vars(args)['lr']=[0.25]
+  vars(args)['clip_norm']=0.1
+  vars(args)['dropout']=0.2
+  #vars(args)['arch']='fconv_iwslt_de_en'
+  vars(args)['save_interval']=1
+  vars(args)['distributed_world_size']=1
+  vars(args)['device_id']=1
+  vars(args)['save_dir']='/data/jenhaochen/bace/testRes_1x'
+  vars(args)['max_epoch']=1000
+  return args 
 
-if __name__ == '__main__':
-    parser = options.get_training_parser()
-    args = options.parse_args_and_arch(parser)
+def myRun(myArgs):
+  os.system("rm -rf /data/jenhaochen/bace/testRes_1x/*")
+  if len(sys.argv) < 4:
+    sys.argv.append('/data/jenhaochen/bace/testDataset_1x')
+    sys.argv.append('--arch')
+    sys.argv.append('fconv_iwslt_de_en')
+  parser = options.get_training_parser()
+  args = options.parse_args_and_arch(parser)  
+  args = initMyArgs(args)
+  print(myArgs)
+  for key, value in myArgs.items():
+    vars(args)[key]=value
+  #pdb.set_trace()
+  best = main(args)
+  return best
 
-    if args.distributed_port > 0 or args.distributed_init_method is not None:
-        from distributed_train import main as distributed_main
+'''
+sys.argv.append('/data/jenhaochen/hiv/testDataset')
+sys.argv.append('--arch')
+sys.argv.append('fconv_iwslt_de_en')
 
-        distributed_main(args)
-    elif args.distributed_world_size > 1:
-        from multiprocessing_train import main as multiprocessing_main
-
-        multiprocessing_main(args)
-    else:
-        main(args)
+parser = options.get_training_parser()
+args = options.parse_args_and_arch(parser)
+pdb.set_trace()
+args = initMyArgs(args)
+main(args)
+'''

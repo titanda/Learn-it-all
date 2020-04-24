@@ -91,7 +91,7 @@ class FairseqTask(object):
                 given dataset split
         """
         assert isinstance(dataset, FairseqDataset)
-        pdb.set_trace()
+        #pdb.set_trace()
         # get indices ordered by example size
         with data_utils.numpy_seed(seed):
             indices = dataset.ordered_indices()
