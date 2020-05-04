@@ -39,10 +39,12 @@ class CrossEntropyCriterion(FairseqCriterion):
                           reduce=reduce)
 
         #pdb.set_trace()
-        
+         
         target = model.get_targets(sample, net_output).view(-1)
         predict = torch.max(net_output[0],2)[1].squeeze(1)
-        true_prob = net_output[0][:,:,5:].reshape(net_output[0].shape[0])
+        mySoftmax = F.softmax(lprobs[:,4:],dim=-1)
+        true_prob = mySoftmax[:,1]
+        #true_prob = net_output[0][:,:,5:].reshape(net_output[0].shape[0])
         #true_prob = torch.max(net_output[0],2)[0].squeeze(1)
         #true_prob = net_output[0][:,:,5:].reshape(net_output[0].shape[0])
         

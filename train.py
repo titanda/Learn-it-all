@@ -26,6 +26,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_auc_score
 
+from sklearn.metrics import classification_report
+
 def main(args):
     if args.max_tokens is None:
         args.max_tokens = 6000
@@ -277,6 +279,8 @@ def validate(args, trainer, task, epoch_itr, subsets):
     print("ACC: {}".format(acc))
     print("ROC-AUC: {}".format(roc_auc))
     print(cm)
+
+    print(classification_report(target, predict))
 
 
     #print("R: {}".format(pearsonr(predict,target)))
