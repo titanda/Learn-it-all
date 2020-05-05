@@ -37,8 +37,6 @@ class CrossEntropyCriterion(FairseqCriterion):
         #pdb.set_trace()
         loss = F.nll_loss(lprobs, target, size_average=False, ignore_index=self.padding_idx,
                           reduce=reduce)
-
-        #pdb.set_trace()
          
         target = model.get_targets(sample, net_output).view(-1)
         predict = torch.max(net_output[0],2)[1].squeeze(1)

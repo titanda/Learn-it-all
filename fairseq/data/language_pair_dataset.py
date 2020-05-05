@@ -72,6 +72,8 @@ def collate(
     }
     if prev_output_tokens is not None:
         batch['net_input']['prev_output_tokens'] = prev_output_tokens
+    if samples[0].get('feature', None) is not None:
+        batch['net_input']['feature'] = torch.stack([s['feature'] for s in samples])
     return batch
 
 
@@ -111,6 +113,7 @@ class LanguagePairDataset(FairseqDataset):
         left_pad_source=True, left_pad_target=False,
         max_source_positions=1024, max_target_positions=1024,
         shuffle=True, input_feeding=True, remove_eos_from_source=False, append_eos_to_target=False,
+        fea=None, fea_sizes=None
     ):
         if tgt_dict is not None:
             assert src_dict.pad() == tgt_dict.pad()
@@ -118,8 +121,10 @@ class LanguagePairDataset(FairseqDataset):
             assert src_dict.unk() == tgt_dict.unk()
         self.src = src
         self.tgt = tgt
+        self.fea = fea
         self.src_sizes = np.array(src_sizes)
         self.tgt_sizes = np.array(tgt_sizes) if tgt_sizes is not None else None
+        self.fea_sizes = np.array(fea_sizes) if fea_sizes is not None else None
         self.src_dict = src_dict
         self.tgt_dict = tgt_dict
         self.left_pad_source = left_pad_source
@@ -134,6 +139,7 @@ class LanguagePairDataset(FairseqDataset):
     def __getitem__(self, index):
         #pdb.set_trace()
         tgt_item = self.tgt[index] if self.tgt is not None else None
+        fea_item = self.fea[index] if self.fea is not None else None
         src_item = self.src[index]
         # Append EOS to end of tgt sentence if it does not have an EOS and remove
         # EOS from end of src sentence if it exists. This is useful when we use
@@ -153,6 +159,7 @@ class LanguagePairDataset(FairseqDataset):
             'id': index,
             'source': src_item,
             'target': tgt_item,
+            'feature': fea_item
         }
 
     def __len__(self):
@@ -203,11 +210,13 @@ class LanguagePairDataset(FairseqDataset):
         )
         bsz = num_tokens // max(src_len, tgt_len)
         tgt_len = 1
+        fea_len = 167
         return self.collater([
             {
                 'id': i,
                 'source': self.src_dict.dummy_sentence(src_len),
                 'target': self.tgt_dict.dummy_sentence(tgt_len) if self.tgt_dict is not None else None,
+                'feature': torch.Tensor(fea_len).uniform_(0, 1)
             }
             for i in range(bsz)
         ])
@@ -238,6 +247,7 @@ class LanguagePairDataset(FairseqDataset):
         #pdb.set_trace()
         self.src.prefetch(indices)
         self.tgt.prefetch(indices)
+        self.fea.prefetch(indices)
 
     @property
     def supports_prefetch(self):

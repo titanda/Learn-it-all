@@ -205,7 +205,7 @@ class FConvEncoder(FairseqEncoder):
             self.padding_idx,
             left_pad=self.left_pad,
         )
-
+        #pdb.set_trace()
         convolutions = extend_conv_spec(convolutions)
         in_channels = convolutions[0][0]
         self.fc1 = Linear(embed_dim, in_channels, dropout=dropout)
@@ -254,6 +254,7 @@ class FConvEncoder(FairseqEncoder):
                   padding elements of shape `(batch, src_len)`
         """
         # embed tokens and positions
+        #pdb.set_trace()
         x = self.embed_tokens(src_tokens) + self.embed_positions(src_tokens)
         x = F.dropout(x, p=self.dropout, training=self.training)
         input_embedding = x
@@ -502,9 +503,13 @@ class FConvDecoder(FairseqIncrementalDecoder):
             '''
             #self.fc3 = Linear(out_embed_dim, 1, dropout=dropout)
             #pdb.set_trace()
-            self.fc3 = Linear(out_embed_dim, num_embeddings, dropout=dropout)
+            self.fc3 = Linear(out_embed_dim*2, num_embeddings, dropout=dropout)
+        self.fea1 = Linear(167, 64, dropout=dropout)
+        self.fea2 = Linear(64, out_embed_dim, dropout=dropout)
 
-    def forward(self, prev_output_tokens, encoder_out_dict=None, incremental_state=None):
+
+    def forward(self, prev_output_tokens, encoder_out_dict=None, incremental_state=None, feature=None):
+        #pdb.set_trace()
         if encoder_out_dict is not None:
             encoder_out = encoder_out_dict['encoder_out']
             encoder_padding_mask = encoder_out_dict['encoder_padding_mask']
@@ -605,7 +610,12 @@ class FConvDecoder(FairseqIncrementalDecoder):
             x = self.fc2(x)
             #pdb.set_trace()
             x = F.dropout(x, p=self.dropout, training=self.training)
-            x = self.fc3(x)
+        #pdb.set_trace()
+        y = feature.unsqueeze(1)
+        y = self.fea1(y)
+        y = self.fea2(y)
+        x = torch.cat((x, y), dim=2)
+        x = self.fc3(x)
 
         #pdb.set_trace()
         return x, avg_attn_scores, all_attn_scores 

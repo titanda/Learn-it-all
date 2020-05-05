@@ -124,6 +124,7 @@ class TranslationTask(FairseqTask):
             return None
         src_datasets = []
         tgt_datasets = []
+        fea_datasets = []
 
         data_paths = self.args.data
 
@@ -147,12 +148,15 @@ class TranslationTask(FairseqTask):
             '''
             src = "src"
             tgt = "tgt"
+            fea = "fea"
             prefix_src = os.path.join(data_path, '{}.{}'.format(split_k, src))
             prefix_tgt = os.path.join(data_path, '{}.{}'.format(split_k, tgt))
+            prefix_fea = os.path.join(data_path, '{}.{}'.format(split_k, fea))
             
             src_datasets.append(indexed_dataset(prefix_src, self.src_dict))
             #tgt_datasets.append(indexed_dataset(prefix_tgt, None))
             tgt_datasets.append(indexed_dataset(prefix_tgt, self.tgt_dict))
+            fea_datasets.append(indexed_dataset(prefix_fea, Dictionary()))
 
             #pdb.set_trace()
             print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
@@ -164,9 +168,10 @@ class TranslationTask(FairseqTask):
         assert len(src_datasets) == len(tgt_datasets)
 
         if len(src_datasets) == 1:
-            src_dataset, tgt_dataset = src_datasets[0], tgt_datasets[0]
+            src_dataset, tgt_dataset, fea_dataset = src_datasets[0], tgt_datasets[0], fea_datasets[0]
             src_sizes = src_dataset.sizes
             tgt_sizes = tgt_dataset.sizes
+            fea_sizes = fea_dataset.sizes
         else:
             if self.args.upsample_primary > 1:
                 src_datasets.extend([src_datasets[0]] * (self.args.upsample_primary - 1))
@@ -183,6 +188,7 @@ class TranslationTask(FairseqTask):
             left_pad_target=self.args.left_pad_target,
             max_source_positions=self.args.max_source_positions,
             max_target_positions=self.args.max_target_positions,
+            fea=fea_dataset, fea_sizes= fea_sizes
         )
 
     def max_positions(self):

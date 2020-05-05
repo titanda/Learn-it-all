@@ -141,7 +141,7 @@ def batch_by_size(
     bsz_mult = required_batch_size_multiple
 
     batch = []
-
+    #pdb.set_trace()
     def is_batch_full(num_tokens):
         if len(batch) == 0:
             return False
