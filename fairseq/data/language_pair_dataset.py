@@ -210,7 +210,7 @@ class LanguagePairDataset(FairseqDataset):
         )
         bsz = num_tokens // max(src_len, tgt_len)
         tgt_len = 1
-        fea_len = 167
+        fea_len = 200
         return self.collater([
             {
                 'id': i,

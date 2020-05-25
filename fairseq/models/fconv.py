@@ -504,7 +504,7 @@ class FConvDecoder(FairseqIncrementalDecoder):
             #self.fc3 = Linear(out_embed_dim, 1, dropout=dropout)
             #pdb.set_trace()
             self.fc3 = Linear(out_embed_dim*2, num_embeddings, dropout=dropout)
-        self.fea1 = Linear(167, 64, dropout=dropout)
+        self.fea1 = Linear(200, 64, dropout=dropout)
         self.fea2 = Linear(64, out_embed_dim, dropout=dropout)
 
 
@@ -613,9 +613,12 @@ class FConvDecoder(FairseqIncrementalDecoder):
         #pdb.set_trace()
         y = feature.unsqueeze(1)
         y = self.fea1(y)
+        y = F.dropout(y, p=self.dropout, training=self.training)
         y = self.fea2(y)
+        y = F.dropout(y, p=self.dropout, training=self.training)
         x = torch.cat((x, y), dim=2)
         x = self.fc3(x)
+        x = F.dropout(x, p=self.dropout, training=self.training)
 
         #pdb.set_trace()
         return x, avg_attn_scores, all_attn_scores 
@@ -806,11 +809,11 @@ def fconv_iwslt_de_en(args):
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 128)
     base_architecture(args)
     '''
-    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 32)
-    args.encoder_layers = getattr(args, 'encoder_layers', '[(64, 3)] * 4')
-    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 32)
-    args.decoder_layers = getattr(args, 'decoder_layers', '[(64, 3)] * 4')
-    args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 32)
+    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 64)
+    args.encoder_layers = getattr(args, 'encoder_layers', '[(32, 3)] * 2')
+    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 64)
+    args.decoder_layers = getattr(args, 'decoder_layers', '[(32, 3)] * 5')
+    args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 64)
     base_architecture(args)
 
 @register_model_architecture('fconv', 'fconv_wmt_en_ro')
