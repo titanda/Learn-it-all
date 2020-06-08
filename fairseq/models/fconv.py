@@ -801,13 +801,14 @@ def fconv_iwslt_de_en(args):
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 256)
     base_architecture(args)
     '''
-    '''
+    #'''
     args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 128)
-    args.encoder_layers = getattr(args, 'encoder_layers', '[(256, 3)] * 9')
+    args.encoder_layers = getattr(args, 'encoder_layers', '[(32, 3)] * 10')
     args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 128)
-    args.decoder_layers = getattr(args, 'decoder_layers', '[(256, 3)] * 5')
+    args.decoder_layers = getattr(args, 'decoder_layers', '[(32, 3)] * 3')
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 128)
     base_architecture(args)
+    #'''
     '''
     args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 64)
     args.encoder_layers = getattr(args, 'encoder_layers', '[(32, 3)] * 2')
@@ -815,6 +816,7 @@ def fconv_iwslt_de_en(args):
     args.decoder_layers = getattr(args, 'decoder_layers', '[(32, 3)] * 5')
     args.decoder_out_embed_dim = getattr(args, 'decoder_out_embed_dim', 64)
     base_architecture(args)
+    '''
 
 @register_model_architecture('fconv', 'fconv_wmt_en_ro')
 def fconv_wmt_en_ro(args):
