@@ -1,1 +1,0 @@
-python eval_loss.py /data/jenhaochen/delaney_dc/eFull_17_1_2_noSame --arch fconv_iwslt_de_en  --distributed-world-size 1 --save-interval=1 --max-epoch=10000 --device-id 1 --my-args /data/jenhaochen/delaney_dc/chembl_stereo_res/seed$1/eMax1_$1/checkpoint$2.pt --train-subset valid > testGenAll$1

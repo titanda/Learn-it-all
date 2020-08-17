@@ -7,4 +7,3 @@ ConvS2P is a molecular property prediction model built based on [ConvS2S](https:
 ### Usage
 
 Train: ./myRun.sh 1  
-Generation: ./myGen.sh

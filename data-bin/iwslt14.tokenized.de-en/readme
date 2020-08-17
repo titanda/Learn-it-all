@@ -1,2 +1,0 @@
-data split:
-	train : valid : test = 955 : 50 : 112
